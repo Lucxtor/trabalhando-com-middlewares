@@ -24,7 +24,17 @@ function checksExistsUserAccount(request, response, next) {
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  // Complete aqui
+  const { user } = request;
+
+  if(user.pro) {
+    return next();
+  }
+
+  if(user.todos.length < 10){
+    return next();
+  }
+
+  return response.status(203).json({error: "To-do limit reached! Get the pro plan and create unlimited to-dos!"})
 }
 
 function checksTodoExists(request, response, next) {
