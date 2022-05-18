@@ -34,7 +34,7 @@ function checksCreateTodosUserAvailability(request, response, next) {
     return next();
   }
 
-  return response.status(203).json({error: "To-do limit reached! Get the pro plan and create unlimited to-dos!"})
+  return response.status(403).json({error: "To-do limit reached! Get the pro plan and create unlimited to-dos!"})
 }
 
 function checksTodoExists(request, response, next) {
@@ -47,7 +47,22 @@ function checksTodoExists(request, response, next) {
     return response.status(404).json({error: "User not found!"});
   }
 
+  const validaUuid = validate(id);
+
+  if(!validaUuid) {
+    return response.status(400).json({error: "Id is not of type UUID!"})
+  }
   
+  const todo = user.todos.find(todo => todo.id === id);
+
+  if(!todo) {
+    return response.status(404).json({error: "Todo not found!"});
+  }
+
+  request.user = user
+  request.todo = todo
+
+  return next();
 }
 
 function findUserById(request, response, next) {
